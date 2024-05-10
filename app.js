@@ -6,6 +6,10 @@ const helmet = require('helmet');
 const cors = require('cors');
 const xss = require('xss-clean');
 const rateLimit = require('express-rate-limit');
+// Swagger
+const swaggerUi = require('swagger-ui-express');
+const YAML = require('yamljs');
+const swaggerDocument = YAML.load('./swagger.yaml');
 
 const app = express();
 
@@ -33,6 +37,10 @@ app.use(cors()); // allow all origins to access the API (for now) - we will chan
 app.use(xss()); // sanitize user input coming from POST body, GET queries, and url params
 
 // routes
+app.get('/', (req, res) => {
+  res.send('<h1>Job API</h1><a href="/api-docs">Documentation</a>');
+});
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 app.use('/api/v1/auth', authRouter);
 app.use('/api/v1/jobs', authenticateUser, jobsRouter);
 
